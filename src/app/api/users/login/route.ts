@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken"
 connect();
 
 const loginUserSchema = z.object({
-    username: z.string().min(3, "Username must be at least 3 characters long"),
+    email: z.string().email("Invalid email address"),
     password: z.string().min(6, "Password must be at least 6 characters long"),
 });
 
@@ -25,10 +25,10 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const { username, password } = parsedData.data;
+        const { email, password } = parsedData.data;
 
         // Check if the user exists
-        const user = await UserModel.findOne({ username });
+        const user = await UserModel.findOne({ email });
         if (!user) {
             return NextResponse.json({ error: "User Not Found" }, { status: 404 });
         }

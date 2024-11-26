@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
     const [user, setUser] = useState({
-        username: "",
+        email: "",
         password: ""
     });
 
@@ -17,7 +17,7 @@ export default function LoginPage() {
         event.preventDefault(); // Prevent the default form submission
 
         // Basic validation
-        if (!user.username || !user.password) {
+        if (!user.email || !user.password) {
             message.error("Please fill in both fields.");
             return;
         }
@@ -39,14 +39,14 @@ export default function LoginPage() {
         <div className="flex justify-center items-center min-h-screen font-sans">
             <form className="w-80 bg-gradient-to-r from-slate-700 to-slate-500 rounded-lg p-8 flex flex-col" onSubmit={handleLogin}>
                 <h1 className="mb-5 text-3xl">Login</h1>
-                <label htmlFor="username">Username</label>
+                <label htmlFor="email">Email</label>
                 <input
                     type="text"
-                    name="username"
-                    id="username"
+                    name="email"
+                    id="email"
                     className="p-2 rounded-md outline-none border border-blue-900 text-gray-700 bg-slate-200"
-                    value={user.username}
-                    onChange={(e) => setUser({ ...user, username: e.target.value })}
+                    value={user.email}
+                    onChange={(e) => setUser({ ...user, email: e.target.value })}
                 />
 
                 <label htmlFor="password">Password</label>
