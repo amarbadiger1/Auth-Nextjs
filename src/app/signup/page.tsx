@@ -2,8 +2,9 @@
 import React, { useState } from "react";
 import axios from "axios";
 import Link from "next/link";
-import { useRouter } from 'next/navigation'; // Correct import
-import { message } from "antd";
+import { useRouter } from 'next/navigation';
+import { toast } from "react-toastify";
+
 
 export default function SignupPage() {
 
@@ -17,15 +18,17 @@ export default function SignupPage() {
 
     const handleSignup = async (event: any) => {
         event.preventDefault();
+
+        if (!user.username || !user.email || !user.password) {
+            return toast.error("Please fill in All fields.");
+
+        }
         try {
             const res = await axios.post("/api/users/signup", user);
-            console.log("Signup success", res.data);
-            console.log(res.data.message)
-            message.success(res.data.message)
+            toast.success(res.data.message)
             router.push("/login");
         } catch (error: any) {
-            message.error("Error while signing up");
-            console.log(error);
+            toast.error(error.response.data.message);
         }
     };
 
@@ -42,6 +45,7 @@ export default function SignupPage() {
                     className="p-2 rounded-md outline-none border border-blue-900 text-gray-700 bg-slate-200"
                     value={user.username}
                     onChange={(e) => setUser({ ...user, username: e.target.value })}
+                    placeholder="Enter your username"
                 />
 
                 <label htmlFor="email">Email</label>
@@ -52,6 +56,7 @@ export default function SignupPage() {
                     className="p-2 rounded-md outline-none border border-blue-900 text-gray-700 bg-slate-200"
                     value={user.email}
                     onChange={(e) => setUser({ ...user, email: e.target.value })}
+                    placeholder="Enter your email"
                 />
 
                 <label htmlFor="password">Password</label>
@@ -62,6 +67,7 @@ export default function SignupPage() {
                     className="p-2 rounded-md outline-none border border-blue-900 text-gray-700 bg-slate-200"
                     value={user.password}
                     onChange={(e) => setUser({ ...user, password: e.target.value })}
+                    placeholder="Enter your password"
                 />
 
                 <button

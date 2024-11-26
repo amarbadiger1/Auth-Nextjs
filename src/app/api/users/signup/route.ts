@@ -23,7 +23,11 @@ export async function POST(request: NextRequest) {
 
     if (!parsedData.success) {
       return NextResponse.json(
-        { message: "Validation Failed", errors: parsedData.error.errors },
+        {
+          message: "Validation Failed",
+          errors: parsedData.error.errors,
+          success: false,
+        },
         { status: 400 }
       );
     }
@@ -34,7 +38,7 @@ export async function POST(request: NextRequest) {
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
       return NextResponse.json(
-        { message: "User already exists" },
+        { message: "User already exists", success: false },
         { status: 409 }
       );
     }
@@ -55,11 +59,10 @@ export async function POST(request: NextRequest) {
     await sendEmail({ email, emailType: "VERIFY", userId: savedUser._id });
 
     return NextResponse.json(
-      { message: "User created successfully", user: savedUser },
+      { message: "User created successfully", success: true, user: savedUser },
       { status: 201 }
     );
   } catch (error: any) {
-    console.error("Error during user creation:", error);
     return NextResponse.json(
       { error: error.message || "Internal Server Error" },
       { status: 500 }

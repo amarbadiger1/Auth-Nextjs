@@ -5,9 +5,10 @@ import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 export default function ProfilePage() {
-    const [data, setData] = useState<any>(null); // Explicit type for clarity
+    const [data, setData] = useState<any>(null);
     const router = useRouter();
 
     // Fetch user details when the component mounts
@@ -16,9 +17,8 @@ export default function ProfilePage() {
             try {
                 const res = await axios.get("/api/users/me");
                 setData(res.data.data);
-            } catch (error) {
-                console.error("Error fetching user details:", error);
-                message.error("Failed to fetch user details");
+            } catch (error: any) {
+                toast.error("Failed to fetch user details");
             }
         };
         fetchUserDetails();
@@ -29,31 +29,40 @@ export default function ProfilePage() {
         event.preventDefault();
         try {
             await axios.get("/api/users/logout");
-            message.success("Logout Successful");
+            toast.success("Logout Successful");
             router.push("/login");
         } catch (error) {
             console.error("Error during logout:", error);
-            message.error("Failed to logout");
+            toast.error("Failed to logout");
         }
     };
 
     return (
-        <div className="grid place-content-center min-h-screen gap-3">
+        <div className="grid place-content-center min-h-screen gap-3 ">
             <h1 className="text-2xl font-bold">Profile</h1>
 
             {/* Conditional rendering for user details */}
+
             {data ? (
-                <Link
-                    className="bg-purple-500 text-white p-2 rounded-md"
-                    href={`/profile/${data._id}`}
-                >
-                    {data._id}
-                </Link>
+                <div className="bg-purple-500 p-3 rounded-md">
+                    <Link
+                        className=" text-white"
+                        href={`/profile/${data._id}`}
+                    >
+                        {data._id}
+                    </Link>
+                    <div className="flex gap-3">
+                        <p>Username</p>
+                        <p>{data.username}</p>
+                    </div>
+                    <div className="flex gap-3">
+                        <p>Email</p>
+                        <p>{data.email}</p>
+                    </div>
+                </div>
             ) : (
                 <p>No user details available</p>
             )}
-
-            <hr />
 
             {/* User Details Button */}
             <button
@@ -62,10 +71,6 @@ export default function ProfilePage() {
             >
                 Fetch User Details
             </button>
-
-            <p>Profile page content here</p>
-
-            <hr />
 
             {/* Logout Button */}
             <button

@@ -13,12 +13,10 @@ export const sendEmail = async ({ email, emailType, userId }: any) => {
         verifyTokenExpiry: Date.now() + 3600000,
       });
     } else if (emailType === "RESET") {
-      if (emailType === "VERIFY") {
-        await UserModel.findByIdAndUpdate(userId, {
-          forgotPasswordToken: hashedToken,
-          forgotPasswordTokenExpiry: Date.now() + 3600000,
-        });
-      }
+      await UserModel.findByIdAndUpdate(userId, {
+        forgotPasswordToken: hashedToken,
+        forgotPasswordTokenExpiry: Date.now() + 3600000,
+      });
     }
 
     // Looking to send emails in production? Check out our Email API/SMTP product!
@@ -31,20 +29,25 @@ export const sendEmail = async ({ email, emailType, userId }: any) => {
       },
     });
 
+    const actionText =
+      emailType === "VERIFY" ? "verify your email" : "reset your password";
+    const actionLink =
+      emailType === "VERIFY"
+        ? `${process.env.DOMAIN}/verifyemail?token=${hashedToken}`
+        : `${process.env.DOMAIN}/forgotpassword?token=${hashedToken}`;
+
     const mailOptions = {
       from: "amarbadiger45@gmail.com",
       to: email,
-      subject:
-        emailType === "VERIFY" ? "Verify your email" : "Reset your password",
-      html: `<p>Click <a href="${
-        process.env.DOMAIN
-      }/verifyemail?token=${hashedToken}">here</a> to ${
-        emailType === "VERIFY" ? "verify your email" : "Reset your password"
-      }
-      or copy and paste the link below in your browser. <br> ${
-        process.env.DOMAIN
-      }/verifyemail?token=${hashedToken}
-      </p>`,
+      subject: `Please ${actionText}`,
+      html: `
+        <p>
+          Click <a href="${actionLink}">here</a> to ${actionText}, 
+          or copy and paste the link below in your browser:
+          <br>
+          ${actionLink}
+        </p>
+      `,
     };
 
     const mailResponse = await transport.sendMail(mailOptions);

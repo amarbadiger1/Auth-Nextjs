@@ -1,9 +1,10 @@
 'use client';
+
 import React, { useState } from "react";
 import axios from "axios";
 import Link from "next/link";
-import { message } from "antd";
 import { useRouter } from 'next/navigation';
+import { toast } from "react-toastify";
 
 export default function LoginPage() {
     const [user, setUser] = useState({
@@ -14,24 +15,20 @@ export default function LoginPage() {
     const router = useRouter();
 
     const handleLogin = async (event: any) => {
-        event.preventDefault(); // Prevent the default form submission
+        event.preventDefault();
 
         // Basic validation
         if (!user.email || !user.password) {
-            message.error("Please fill in both fields.");
+            toast.error("Please fill in both fields.");
             return;
         }
 
         try {
-            const res = await axios.post("/api/users/login", user); // Send user credentials
-            message.success(res.data.message); // Display success message
-            console.log("Login success", res.data);
-
-            // Navigate to the home page or any other protected route
+            const res = await axios.post("/api/users/login", user);
+            toast.success(res.data.message);
             router.push("/profile");
         } catch (error: any) {
-            message.error("Error while logging in.");
-            console.log("Login error:", error);
+            toast.error(error.response.data.message);
         }
     };
 
@@ -47,6 +44,7 @@ export default function LoginPage() {
                     className="p-2 rounded-md outline-none border border-blue-900 text-gray-700 bg-slate-200"
                     value={user.email}
                     onChange={(e) => setUser({ ...user, email: e.target.value })}
+                    placeholder="Enter youe email"
                 />
 
                 <label htmlFor="password">Password</label>
@@ -57,6 +55,7 @@ export default function LoginPage() {
                     className="p-2 rounded-md outline-none border border-blue-900 text-gray-700 bg-slate-200"
                     value={user.password}
                     onChange={(e) => setUser({ ...user, password: e.target.value })}
+                    placeholder="Enter your password"
                 />
 
                 <button
@@ -68,6 +67,10 @@ export default function LoginPage() {
 
                 <Link href="/signup" className="my-3 text-center underline hover:text-orange-600 font-thin">
                     Not yet Registered
+                </Link>
+
+                <Link href="/resetpassword" className="text-center underline hover:text-blue-500 font-thin">
+                    forgot password
                 </Link>
             </form>
         </div>
